@@ -69,8 +69,8 @@ export const TodoList: FC<Props> = (props) => {
                     <span className="icon">
                       <i className={cn(
                         'far', {
-                          'fa-eye': selectedTodo !== todo,
                           'fa-eye-slash': selectedTodo === todo,
+                          'fa-eye': selectedTodo !== todo,
                         },
                       )}
                       />
