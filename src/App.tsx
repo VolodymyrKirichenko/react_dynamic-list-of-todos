@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
-import React, { useEffect, useState } from 'react';
+import React, {
+  ChangeEvent, FormEvent, useCallback, useEffect, useState,
+} from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import { TodoList } from './components/TodoList';
@@ -12,34 +14,62 @@ import { getTodos } from './api';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todosStatus, setTodosStatus] = useState('all');
-  const [query, setQuery] = useState('');
+  const [title, setTitle] = useState('');
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [hasLoadingError, setHasLoadingError] = useState(false);
 
-  useEffect(() => {
-    const loadTodos = async () => {
-      try {
-        const todosFromServer = await getTodos();
-
-        setTodos(todosFromServer);
-      } catch (error) {
-        setHasLoadingError(true);
-      }
-    };
-
-    loadTodos();
+  const handleChangeTitle = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
   }, []);
+
+  const handleClear = useCallback(() => {
+    setTitle('');
+  }, []);
+
+  const handleChangeTodoStatus = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    setTodosStatus(e.target.value);
+  }, []);
+
+  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  }, []);
+
+  const handleDeleteTodo = useCallback(() => {
+    setSelectedTodo(null);
+  }, []);
+
+  const handleLoadingError = useCallback((error) => {
+    setHasLoadingError(true);
+
+    throw new Error(error);
+  }, []);
+
+  const isHasTodos = todos.length > 0;
 
   const filterTodo = todos.filter((todo) => {
     switch (todosStatus) {
       case 'active':
-        return !todo.completed && todo.title.toLowerCase().includes(query.toLowerCase());
+        return !todo.completed && todo.title.toLowerCase().includes(title.toLowerCase().trim());
       case 'completed':
-        return todo.completed && todo.title.toLowerCase().includes(query.toLowerCase());
+        return todo.completed && todo.title.toLowerCase().includes(title.toLowerCase().trim());
       default:
-        return todo.title.toLowerCase().includes(query.toLowerCase());
+        return todo.title.toLowerCase().includes(title.toLowerCase().trim());
     }
   });
+
+  const loadTodos = useCallback(async () => {
+    try {
+      const todosFromServer = await getTodos();
+
+      setTodos(todosFromServer);
+    } catch (error) {
+      handleLoadingError('Error');
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
 
   return (
     <>
@@ -50,15 +80,17 @@ export const App: React.FC = () => {
 
             <div className="block">
               <TodoFilter
-                query={query}
-                setQuery={setQuery}
+                title={title}
+                onClear={handleClear}
+                onSubmit={handleSubmit}
                 todosStatus={todosStatus}
-                setTodosStatus={setTodosStatus}
+                onChangeTitle={handleChangeTitle}
+                onChangeTodoStatus={handleChangeTodoStatus}
               />
             </div>
 
             <div className="block">
-              {todos.length > 0
+              {isHasTodos
                 ? (
                   <TodoList
                     todos={filterTodo}
@@ -75,17 +107,16 @@ export const App: React.FC = () => {
       {selectedTodo && (
         <TodoModal
           selectedTodo={selectedTodo}
-          setSelectedTodo={setSelectedTodo}
-          setHasLoadingError={setHasLoadingError}
+          onDelete={handleDeleteTodo}
+          onError={handleLoadingError}
         />
       )}
 
-      {hasLoadingError
-        && (
-          <div className="notification is-danger is-light">
-            Loading error
-          </div>
-        )}
+      {hasLoadingError && (
+        <div className="notification is-danger is-light">
+          Loading error
+        </div>
+      )}
     </>
   );
 };

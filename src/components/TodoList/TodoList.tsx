@@ -22,6 +22,7 @@ export const TodoList: FC<Props> = (props) => {
             </span>
           </th>
           <th>Title</th>
+          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <th />
         </tr>
       </thead>
@@ -40,13 +41,20 @@ export const TodoList: FC<Props> = (props) => {
                 <td className="is-vcentered">
                   {id}
                 </td>
-                <td className="is-vcentered" />
+                <td className="is-vcentered">
+                  {completed && (
+                    <span className="icon">
+                      <i className="fas fa-check" />
+                    </span>
+                  )}
+                </td>
                 <td className="is-vcentered is-expanded">
                   <p
                     className={cn({
                       'has-text-danger': !completed,
                       'has-text-success': completed,
                     })}
+                    style={{ width: 600 }}
                   >
                     {title}
                   </p>

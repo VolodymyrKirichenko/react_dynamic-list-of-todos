@@ -1,4 +1,6 @@
-import { FC, useEffect, useState } from 'react';
+import {
+  FC, useCallback, useEffect, useState,
+} from 'react';
 import { Loader } from '../Loader';
 import { Todo } from '../../types/Todo';
 import { getUser } from '../../api';
@@ -6,15 +8,15 @@ import { User } from '../../types/User';
 
 interface Props {
   selectedTodo: Todo;
-  setSelectedTodo: (todo: null) => void;
-  setHasLoadingError: (b: boolean) => void;
+  onDelete: () => void;
+  onError: (error: string) => void;
 }
 
 export const TodoModal: FC<Props> = (props) => {
   const {
     selectedTodo,
-    setSelectedTodo,
-    setHasLoadingError,
+    onDelete,
+    onError,
   } = props;
 
   const {
@@ -26,17 +28,17 @@ export const TodoModal: FC<Props> = (props) => {
 
   const [user, setUser] = useState<User>();
 
+  const loadUser = useCallback(async () => {
+    try {
+      const usersFromServer = await getUser(userId);
+
+      setUser(usersFromServer);
+    } catch (error) {
+      onError('Error');
+    }
+  }, []);
+
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const usersFromServer = await getUser(userId);
-
-        setUser(usersFromServer);
-      } catch (error) {
-        setHasLoadingError(true);
-      }
-    };
-
     loadUser();
   }, [id]);
 
@@ -61,7 +63,7 @@ export const TodoModal: FC<Props> = (props) => {
               type="button"
               className="delete"
               data-cy="modal-close"
-              onClick={() => setSelectedTodo(null)}
+              onClick={onDelete}
             />
           </header>
 

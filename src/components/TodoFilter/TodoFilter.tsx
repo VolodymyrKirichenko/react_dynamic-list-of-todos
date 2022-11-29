@@ -1,33 +1,35 @@
-import { FC } from 'react';
+import { ChangeEvent, FC, FormEvent } from 'react';
 
 interface Props {
-  query: string;
-  setQuery: (query: string) => void;
+  title: string;
+  onClear: () => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   todosStatus: string;
-  setTodosStatus: (todosStatus: string) => void;
+  onChangeTitle: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeTodoStatus: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export const TodoFilter: FC<Props> = (props) => {
   const {
-    query,
-    setQuery,
+    title,
+    onClear,
+    onSubmit,
     todosStatus,
-    setTodosStatus,
+    onChangeTitle,
+    onChangeTodoStatus,
   } = props;
 
   return (
     <form
       className="field has-addons"
-      onSubmit={e => e.preventDefault()}
+      onSubmit={onSubmit}
     >
       <p className="control">
         <span className="select">
           <select
             data-cy="statusSelect"
             value={todosStatus}
-            onChange={
-              (e) => setTodosStatus(e.target.value)
-            }
+            onChange={onChangeTodoStatus}
           >
             <option value="all">All</option>
             <option value="active">Active</option>
@@ -42,22 +44,25 @@ export const TodoFilter: FC<Props> = (props) => {
           type="text"
           className="input"
           placeholder="Search..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={title}
+          onChange={onChangeTitle}
         />
         <span className="icon is-left">
           <i className="fas fa-magnifying-glass" />
         </span>
 
-        <span className="icon is-right" style={{ pointerEvents: 'all' }}>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <button
-            data-cy="clearSearchButton"
-            type="button"
-            className="delete"
-            onClick={() => setQuery('')}
-          />
-        </span>
+        <div className="icon is-right" style={{ pointerEvents: 'all' }}>
+          {title
+            && (
+            // eslint-disable-next-line jsx-a11y/control-has-associated-label
+              <button
+                data-cy="clearSearchButton"
+                type="button"
+                className="delete"
+                onClick={onClear}
+              />
+            )}
+        </div>
       </p>
     </form>
   );
