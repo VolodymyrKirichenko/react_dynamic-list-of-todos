@@ -24,7 +24,7 @@ export const TodoFilter: FC<Props> = (props) => {
       className="field has-addons"
       onSubmit={onSubmit}
     >
-      <p className="control">
+      <div className="control">
         <span className="select">
           <select
             data-cy="statusSelect"
@@ -36,9 +36,9 @@ export const TodoFilter: FC<Props> = (props) => {
             <option value="completed">Completed</option>
           </select>
         </span>
-      </p>
+      </div>
 
-      <p className="control is-expanded has-icons-left has-icons-right">
+      <div className="control is-expanded has-icons-left has-icons-right">
         <input
           data-cy="searchInput"
           type="text"
@@ -63,7 +63,7 @@ export const TodoFilter: FC<Props> = (props) => {
               />
             )}
         </div>
-      </p>
+      </div>
     </form>
   );
 };

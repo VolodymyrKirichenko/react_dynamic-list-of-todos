@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -32,22 +32,20 @@ export const TodoList: FC<Props> = (props) => {
           const { id, title, completed } = todo;
 
           return (
-            <>
-              <tr
-                key={id}
-                data-cy="todo"
-                className=""
-              >
+            <React.Fragment key={id}>
+              <tr data-cy="todo">
                 <td className="is-vcentered">
                   {id}
                 </td>
+
                 <td className="is-vcentered">
                   {completed && (
-                    <span className="icon">
+                    <span className="icon" data-cy="iconCompleted">
                       <i className="fas fa-check" />
                     </span>
                   )}
                 </td>
+
                 <td className="is-vcentered is-expanded">
                   <p
                     className={cn({
@@ -59,6 +57,7 @@ export const TodoList: FC<Props> = (props) => {
                     {title}
                   </p>
                 </td>
+
                 <td className="has-text-right is-vcentered">
                   <button
                     data-cy="selectButton"
@@ -78,7 +77,7 @@ export const TodoList: FC<Props> = (props) => {
                   </button>
                 </td>
               </tr>
-            </>
+            </React.Fragment>
           );
         })}
       </tbody>
